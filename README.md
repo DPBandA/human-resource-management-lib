@@ -1,2 +1,2 @@
-# wal
-The Web Application Library (WAL) is a base library for web applications.
+### Human Resource Management Library
+The library for the Human Resource Management web application.
