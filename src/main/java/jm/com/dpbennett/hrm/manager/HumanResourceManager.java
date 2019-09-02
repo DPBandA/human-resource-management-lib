@@ -935,7 +935,9 @@ public class HumanResourceManager implements Serializable,
 
         getSystemManager().getDashboard().reset(getUser());
 
-        getSystemManager().addDashboardTab(new TabPanel("System Administration", "System Administration"));
+        getSystemManager().addDashboardTab(
+                new TabPanel("System Administration",
+                        "System Administration"));
 
     }
 
