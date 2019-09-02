@@ -936,8 +936,10 @@ public class HumanResourceManager implements Serializable,
         getSystemManager().getDashboard().reset(getUser());
 
         getSystemManager().addDashboardTab(
-                new TabPanel("System Administration",
-                        "System Administration"));
+                new TabPanel("Human Resource", "Human Resource"));
+        
+        getSystemManager().addDashboardTab(
+                new TabPanel("System Administration", "System Administration"));        
 
     }
 
@@ -946,6 +948,8 @@ public class HumanResourceManager implements Serializable,
         getSystemManager().getMainTabView().reset(getUser());
 
         getMainTabView().openTab("System Administration");
+        
+        getMainTabView().openTab("Human Resource");
 
     }
 
