@@ -38,9 +38,12 @@ import jm.com.dpbennett.business.entity.JobManagerUser;
 import jm.com.dpbennett.business.entity.Laboratory;
 import jm.com.dpbennett.business.entity.Subgroup;
 import jm.com.dpbennett.sm.manager.SystemManager;
+import jm.com.dpbennett.sm.manager.SystemManager.LoginActionListener;
+import jm.com.dpbennett.sm.manager.SystemManager.SearchActionListener;
 import jm.com.dpbennett.sm.util.BeanUtils;
 import jm.com.dpbennett.sm.util.MainTabView;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
+import jm.com.dpbennett.sm.util.TabPanel;
 import jm.com.dpbennett.sm.util.Utils;
 import org.primefaces.PrimeFaces;
 import org.primefaces.component.tabview.Tab;
@@ -50,12 +53,11 @@ import org.primefaces.model.DualListModel;
  *
  * @author Desmond Bennett
  */
-public class HumanResourceManager implements Serializable {
+public class HumanResourceManager implements Serializable,
+        SearchActionListener, LoginActionListener {
 
     @PersistenceUnit(unitName = "JMTSPU")
     private EntityManagerFactory EMF;
-//    private MainTabView mainTabView;
-//    private JobManagerUser user;
     private int activeTabIndex;
     private int activeNavigationTabIndex;
     private String activeTabForm;
@@ -131,14 +133,17 @@ public class HumanResourceManager implements Serializable {
         isActiveBusinessesOnly = true;
         isActiveSubgroupsOnly = true;
         isActiveDivisionsOnly = true;
+
+        getSystemManager().addSingleLoginActionListener(this);
     }
-    
+
     /**
      * Gets the SystemManager object as a session bean.
-     * @return 
+     *
+     * @return
      */
     public SystemManager getSystemManager() {
-         return BeanUtils.findBean("systemManager");
+        return BeanUtils.findBean("systemManager");
     }
 
     public static String getDepartmentFullCode(
@@ -904,6 +909,42 @@ public class HumanResourceManager implements Serializable {
 
     public EntityManager getEntityManager() {
         return EMF.createEntityManager();
+    }
+
+    @Override
+    public void doDefaultSearch() {
+        switch (getSystemManager().getDashboard().getSelectedTabId()) {
+            case "Human Resource":
+                //getPurchasingManager().doDefaultSearch();
+                break;
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public void doLogin() {
+
+        initDashboard();
+        initMainTabView();
+
+        getSystemManager().addSingleSearchActionListener(this);
+    }
+
+    private void initDashboard() {
+
+        getSystemManager().getDashboard().reset(getUser());
+
+        getSystemManager().addDashboardTab(new TabPanel("System Administration", "System Administration"));
+
+    }
+
+    private void initMainTabView() {
+
+        getSystemManager().getMainTabView().reset(getUser());
+
+        getMainTabView().openTab("System Administration");
+
     }
 
 }
