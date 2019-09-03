@@ -1,5 +1,5 @@
 /*
-Job Management & Tracking System (JMTS) 
+Human Resource Management (HRM) 
 Copyright (C) 2017  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
@@ -24,6 +24,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.faces.event.ActionEvent;
+import javax.faces.event.AjaxBehaviorEvent;
+import javax.faces.event.ValueChangeEvent;
+import javax.faces.model.SelectItem;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
@@ -32,6 +35,7 @@ import jm.com.dpbennett.business.entity.BusinessOffice;
 import jm.com.dpbennett.business.entity.Department;
 import jm.com.dpbennett.business.entity.DepartmentUnit;
 import jm.com.dpbennett.business.entity.Division;
+import jm.com.dpbennett.business.entity.Email;
 import jm.com.dpbennett.business.entity.Employee;
 import jm.com.dpbennett.business.entity.EmployeePosition;
 import jm.com.dpbennett.business.entity.JobManagerUser;
@@ -47,6 +51,7 @@ import jm.com.dpbennett.sm.util.TabPanel;
 import jm.com.dpbennett.sm.util.Utils;
 import org.primefaces.PrimeFaces;
 import org.primefaces.component.tabview.Tab;
+import org.primefaces.event.SelectEvent;
 import org.primefaces.model.DualListModel;
 
 /**
@@ -75,6 +80,7 @@ public class HumanResourceManager implements Serializable,
     private Boolean isActiveBusinessesOnly;
     private Boolean isActiveSubgroupsOnly;
     private Boolean isActiveDivisionsOnly;
+    private Boolean isActiveEmailsOnly;
     private Date startDate;
     private Date endDate;
     // Search text
@@ -85,6 +91,7 @@ public class HumanResourceManager implements Serializable,
     private String businessSearchText;
     private String subgroupSearchText;
     private String divisionSearchText;
+    private String emailSearchText;
     // Found object lists
     private List<Employee> foundEmployees;
     private List<EmployeePosition> foundEmployeePositions;
@@ -92,6 +99,7 @@ public class HumanResourceManager implements Serializable,
     private List<Business> foundBusinesses;
     private List<Subgroup> foundSubgroups;
     private List<Division> foundDivisions;
+    private List<Email> foundEmails;
     private DualListModel<Department> departmentDualList;
     private DualListModel<Subgroup> subgroupDualList;
     // Selected objects
@@ -101,6 +109,12 @@ public class HumanResourceManager implements Serializable,
     private Subgroup selectedSubgroup;
     private Division selectedDivision;
     private Business selectedBusiness;
+    private Email selectedEmail;
+    // User related
+    private JobManagerUser selectedUser;
+    private JobManagerUser foundUser;
+    private String userSearchText;
+    private List<JobManagerUser> foundUsers;
 
     /**
      * Creates a new instance of SystemManager
@@ -125,6 +139,7 @@ public class HumanResourceManager implements Serializable,
         subgroupSearchText = "";
         divisionSearchText = "";
         businessSearchText = "";
+        emailSearchText = "";
         // Active objects
         isActiveUsersOnly = true;
         isActiveEmployeesOnly = true;
@@ -133,6 +148,10 @@ public class HumanResourceManager implements Serializable,
         isActiveBusinessesOnly = true;
         isActiveSubgroupsOnly = true;
         isActiveDivisionsOnly = true;
+        isActiveEmailsOnly = true;
+        // User related
+        foundUsers = null;
+        userSearchText = "";
 
         getSystemManager().addSingleLoginActionListener(this);
     }
@@ -144,6 +163,261 @@ public class HumanResourceManager implements Serializable,
      */
     public SystemManager getSystemManager() {
         return BeanUtils.findBean("systemManager");
+    }
+
+    public Email getSelectedEmail() {
+        return selectedEmail;
+    }
+
+    public void setSelectedEmail(Email selectedEmail) {
+        this.selectedEmail = selectedEmail;
+    }
+
+    public Boolean getIsActiveEmailsOnly() {
+        return isActiveEmailsOnly;
+    }
+
+    public void setIsActiveEmailsOnly(Boolean isActiveEmailsOnly) {
+        this.isActiveEmailsOnly = isActiveEmailsOnly;
+    }
+
+    public void updatePrivileges(AjaxBehaviorEvent event) {
+        switch (event.getComponent().getId()) {
+            // Job Privileges
+            case "canEnterJob":
+                selectedUser.getPrivilege().
+                        setCanEnterDepartmentJob(selectedUser.getPrivilege().getCanEnterJob());
+                selectedUser.getPrivilege().
+                        setCanEnterOwnJob(selectedUser.getPrivilege().getCanEnterJob());
+                break;
+            case "canEditJob":
+                selectedUser.getPrivilege().setCanEditDepartmentJob(selectedUser.
+                        getPrivilege().getCanEditJob());
+                selectedUser.getPrivilege().setCanEditOwnJob(selectedUser.getPrivilege().getCanEditJob());
+                break;
+            case "canEnterDepartmentJob":
+            case "canEnterOwnJob":
+            case "canEditDepartmentalJob":
+            case "canEditOwnJob":
+            case "canApproveJobCosting":
+            // Organizational Privileges    
+            case "canAddClient":
+            case "canAddSupplier":
+            case "canDeleteClient":
+            case "canAddEmployee":
+            case "canDeleteEmployee":
+            case "canAddDepartment":
+            case "canDeleteDepartment":
+            case "canBeSuperUser":
+                break;
+            default:
+                break;
+        }
+
+        selectedUser.getPrivilege().setIsDirty(true);
+    }
+
+    public void updateModuleAccess(AjaxBehaviorEvent event) {
+        switch (event.getComponent().getId()) {
+            case "canAccessComplianceUnit":
+                getSelectedUser().getModules().setComplianceModule(getSelectedUser().
+                        getPrivilege().getCanAccessComplianceUnit());
+                break;
+            case "canAccessCertificationUnit":
+                getSelectedUser().getModules().setCertificationModule(getSelectedUser().
+                        getPrivilege().getCanAccessCertificationUnit());
+                break;
+            case "canAccessFoodsUnit":
+                getSelectedUser().getModules().setFoodsModule(getSelectedUser().
+                        getPrivilege().getCanAccessFoodsUnit());
+                break;
+            case "canAccessJobManagementUnit":
+                getSelectedUser().getModules().setJobManagementAndTrackingModule(getSelectedUser().
+                        getPrivilege().getCanAccessJobManagementUnit());
+                break;
+            case "canAccessLegalMetrologyUnit":
+                getSelectedUser().getModules().setLegalMetrologyModule(getSelectedUser().
+                        getPrivilege().getCanAccessLegalMetrologyUnit());
+                break;
+            case "canAccessLegalOfficeUnit":
+                getSelectedUser().getModules().setLegalOfficeModule(getSelectedUser().
+                        getPrivilege().getCanAccessLegalOfficeUnit());
+                break;
+            case "canAccessServiceRequestUnit":
+                getSelectedUser().getModules().setServiceRequestModule(getSelectedUser().
+                        getPrivilege().getCanAccessServiceRequestUnit());
+                break;
+            case "canAccessStandardsUnit":
+                getSelectedUser().getModules().setStandardsModule(getSelectedUser().
+                        getPrivilege().getCanAccessStandardsUnit());
+                break;
+            case "canAccessCRMUnit":
+                getSelectedUser().getModules().setCrmModule(getSelectedUser().
+                        getPrivilege().getCanAccessCRMUnit());
+                break;
+            case "canBeFinancialAdministrator":
+                getSelectedUser().getModules().setFinancialAdminModule(getSelectedUser().
+                        getPrivilege().getCanBeFinancialAdministrator());
+                break;
+            case "canAccessProcurementUnit":
+                getSelectedUser().getModules().setPurchaseManagementModule(getSelectedUser().
+                        getPrivilege().getCanAccessProcurementUnit());
+                break;
+            case "canBeJMTSAdministrator":
+                getSelectedUser().getModules().setAdminModule(getSelectedUser().
+                        getPrivilege().getCanBeJMTSAdministrator());
+                break;
+            default:
+                break;
+
+        }
+
+        getSelectedUser().getPrivilege().setIsDirty(true);
+        getSelectedUser().getModules().setIsDirty(true);
+    }
+
+    public List<JobManagerUser> getFoundUsers() {
+        if (foundUsers == null) {
+            foundUsers = JobManagerUser.findAllActiveJobManagerUsers(getEntityManager());
+        }
+        return foundUsers;
+    }
+
+    public String getUserSearchText() {
+        return userSearchText;
+    }
+
+    public void setUserSearchText(String userSearchText) {
+        this.userSearchText = userSearchText;
+    }
+
+    public void doUserSearch() {
+
+        if (getIsActiveUsersOnly()) {
+            foundUsers = JobManagerUser.findActiveJobManagerUsersByName(getEntityManager(), getUserSearchText());
+        } else {
+            foundUsers = JobManagerUser.findJobManagerUsersByName(getEntityManager(), getUserSearchText());
+        }
+
+    }
+
+    public String getFoundUser() {
+
+        if (foundUser != null) {
+            return foundUser.getUsername();
+        } else {
+            foundUser = new JobManagerUser();
+            foundUser.setUsername("");
+
+            return foundUser.getUsername();
+        }
+    }
+
+    public void setFoundUser(String username) {
+        foundUser.setUsername(username);
+    }
+
+    public void editUser() {
+        PrimeFacesUtils.openDialog(getSelectedUser(), "userDialog", true, true, true, 430, 750);
+    }
+
+    public JobManagerUser getSelectedUser() {
+        // init with current logged on user if null
+        if (selectedUser == null) {
+            selectedUser = new JobManagerUser();
+        }
+
+        return selectedUser;
+    }
+
+    public void setSelectedUser(JobManagerUser selectedUser) {
+        this.selectedUser = selectedUser;
+    }
+
+    public void cancelUserEdit(ActionEvent actionEvent) {
+        PrimeFaces.current().dialog().closeDynamic(null);
+    }
+
+    public void saveSelectedUser(ActionEvent actionEvent) {
+
+        selectedUser.save(getEntityManager());
+
+        PrimeFaces.current().dialog().closeDynamic(null);
+
+    }
+
+    public void updateSelectedUserEmployee() {
+        if (selectedUser.getEmployee() != null) {
+            if (selectedUser.getEmployee().getId() != null) {
+                selectedUser.setEmployee(Employee.findEmployeeById(getEntityManager(), selectedUser.getEmployee().getId()));
+            } else {
+                Employee employee = Employee.findDefaultEmployee(getEntityManager(), "--", "--", true);
+                if (selectedUser.getEmployee() != null) {
+                    selectedUser.setEmployee(employee);
+                }
+            }
+        } else {
+            Employee employee = Employee.findDefaultEmployee(getEntityManager(), "--", "--", true);
+            if (selectedUser.getEmployee() != null) {
+                selectedUser.setEmployee(employee);
+            }
+        }
+    }
+
+    public void updateSelectedUser() {
+
+        EntityManager em = getEntityManager();
+
+        if (selectedUser.getId() != null) {
+            selectedUser = JobManagerUser.findJobManagerUserById(em, selectedUser.getId());
+        }
+    }
+
+    public void updateFoundUser(SelectEvent event) {
+
+        EntityManager em = getEntityManager();
+
+        JobManagerUser u = JobManagerUser.findJobManagerUserByUsername(em, foundUser.getUsername().trim());
+        if (u != null) {
+            foundUser = u;
+            selectedUser = u;
+        }
+    }
+
+    public List<String> completeUser(String query) {
+
+        try {
+            List<JobManagerUser> users = JobManagerUser.findJobManagerUsersByUsername(getEntityManager(), query);
+            List<String> suggestions = new ArrayList<>();
+            if (users != null) {
+                if (!users.isEmpty()) {
+                    for (JobManagerUser u : users) {
+                        suggestions.add(u.getUsername());
+                    }
+                }
+            }
+
+            return suggestions;
+        } catch (Exception e) {
+            System.out.println(e);
+
+            return new ArrayList<>();
+        }
+    }
+
+    public void createNewUser() {
+        EntityManager em = getEntityManager();
+
+        selectedUser = new JobManagerUser();
+        selectedUser.setEmployee(Employee.findDefaultEmployee(em, "--", "--", true));
+
+        editUser();
+    }
+
+    public void updateUserPrivilege(ValueChangeEvent event) {
+    }
+
+    public void handleUserDialogReturn() {
     }
 
     public static String getDepartmentFullCode(
@@ -537,6 +811,84 @@ public class HumanResourceManager implements Serializable,
 
     }
 
+    public List<Email> getFoundEmails() {
+        if (foundEmails == null) {
+            foundEmails = Email.findAllActiveEmails(getEntityManager());
+        }
+
+        return foundEmails;
+    }
+
+    public void setFoundEmails(List<Email> foundEmails) {
+        this.foundEmails = foundEmails;
+    }
+
+    public String getEmailSearchText() {
+        return emailSearchText;
+    }
+
+    public void setEmailSearchText(String emailSearchText) {
+        this.emailSearchText = emailSearchText;
+    }
+
+    public void doEmailSearch() {
+
+        if (getIsActiveEmailsOnly()) {
+            foundEmails = Email.findActiveEmails(getEntityManager(), getEmailSearchText());
+        } else {
+            foundEmails = Email.findEmails(getEntityManager(), getEmailSearchText());
+        }
+
+    }
+    
+    public void editEmailTemplate() {
+        PrimeFacesUtils.openDialog(null, "emailTemplateDialog", true, true, true, 550, 700);
+    }
+
+    public void createNewEmailTemplate() {
+
+        selectedEmail = new Email();
+
+        editEmailTemplate();
+    }
+
+    public List getEmailCategories() {
+        ArrayList categories = new ArrayList();
+
+        categories.add(new SelectItem("", ""));
+        categories.add(new SelectItem("Purchase Requisition", "Purchase Requisition"));
+        categories.add(new SelectItem("Job", "Job"));
+
+        return categories;
+    }
+
+    public List getEmailTypes() {
+        ArrayList categories = new ArrayList();
+
+        categories.add(new SelectItem("", ""));
+        categories.add(new SelectItem("Template", "Template"));
+        categories.add(new SelectItem("Instance", "Instance"));
+
+        return categories;
+    }
+
+    public List getContentTypes() {
+        ArrayList types = new ArrayList();
+
+        types.add(new SelectItem("text/plain", "text/plain"));
+        types.add(new SelectItem("text/html", "text/html"));
+        types.add(new SelectItem("text/html; charset=utf-8", "text/html; charset=utf-8"));
+
+        return types;
+    }
+
+    public void saveSelectedEmail() {
+
+        selectedEmail.save(getEntityManager());
+
+        PrimeFaces.current().dialog().closeDynamic(null);
+    }
+
     public void doSubgroupSearch() {
         foundSubgroups = Subgroup.findAllByName(getEntityManager(), getSubgroupSearchText());
     }
@@ -559,8 +911,8 @@ public class HumanResourceManager implements Serializable,
 
     }
 
-    public void openSystemBrowser() {
-        getMainTabView().openTab("System Administration");
+    public void openHumanResourceBrowser() {
+        getMainTabView().openTab("Human Resource");
     }
 
     public void editDepartment() {
@@ -937,9 +1289,9 @@ public class HumanResourceManager implements Serializable,
 
         getSystemManager().addDashboardTab(
                 new TabPanel("Human Resource", "Human Resource"));
-        
+
         getSystemManager().addDashboardTab(
-                new TabPanel("System Administration", "System Administration"));        
+                new TabPanel("System Administration", "System Administration"));
 
     }
 
@@ -948,7 +1300,7 @@ public class HumanResourceManager implements Serializable,
         getSystemManager().getMainTabView().reset(getUser());
 
         getMainTabView().openTab("System Administration");
-        
+
         getMainTabView().openTab("Human Resource");
 
     }
