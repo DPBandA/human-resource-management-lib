@@ -284,10 +284,14 @@ public class HumanResourceManager implements Serializable,
                 getSelectedUser().getModules().setPurchaseManagementModule(getSelectedUser().
                         getPrivilege().getCanAccessProcurementUnit());
                 break;
+            case "canAccessHRMUnit":
+                getSelectedUser().getModules().setHrmModule(getSelectedUser().
+                        getPrivilege().getCanAccessHRMUnit());
+                break;    
             case "canBeJMTSAdministrator":
                 getSelectedUser().getModules().setAdminModule(getSelectedUser().
                         getPrivilege().getCanBeJMTSAdministrator());
-                break;
+                break;                
             default:
                 break;
 
