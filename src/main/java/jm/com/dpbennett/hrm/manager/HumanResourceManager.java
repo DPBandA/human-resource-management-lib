@@ -287,11 +287,11 @@ public class HumanResourceManager implements Serializable,
             case "canAccessHRMUnit":
                 getSelectedUser().getModules().setHrmModule(getSelectedUser().
                         getPrivilege().getCanAccessHRMUnit());
-                break;    
+                break;
             case "canBeJMTSAdministrator":
                 getSelectedUser().getModules().setAdminModule(getSelectedUser().
                         getPrivilege().getCanBeJMTSAdministrator());
-                break;                
+                break;
             default:
                 break;
 
@@ -1245,16 +1245,16 @@ public class HumanResourceManager implements Serializable,
 
         return foundEmployees;
     }
-    
+
     public void updatePreferences() {
         getUser().save(getEntityManager());
     }
-    
+
     public void updatePreferedJobTableView(SelectEvent event) {
         getUser().save(getEntityManager());
     }
-    
-     public void updateDashboardTabs(AjaxBehaviorEvent event) {
+
+    public void updateDashboardTabs(AjaxBehaviorEvent event) {
 
         switch (event.getComponent().getId()) {
             case "jobManagementAndTrackingUnit":
@@ -1274,7 +1274,7 @@ public class HumanResourceManager implements Serializable,
                         getUser().getModules().getPurchaseManagementModule());
                 getUser().getModules().setIsDirty(true);
                 getUser().save(getEntityManager());
-                break;    
+                break;
             case "adminUnit":
                 getSystemManager().getDashboard().addTab(getEntityManager(), "System Administration",
                         getUser().getModules().getAdminModule());
@@ -1329,6 +1329,12 @@ public class HumanResourceManager implements Serializable,
                 getUser().getModules().setIsDirty(true);
                 getUser().save(getEntityManager());
                 break;
+            case "hrmUnit":
+                getSystemManager().getDashboard().addTab(getEntityManager(), "Human Resource",
+                        getUser().getModules().getHrmModule());
+                getUser().getModules().setIsDirty(true);
+                getUser().save(getEntityManager());
+                break;
             default:
                 break;
         }
@@ -1367,11 +1373,15 @@ public class HumanResourceManager implements Serializable,
 
         getSystemManager().getDashboard().reset(getUser());
 
-        getSystemManager().addDashboardTab(
-                new TabPanel("Human Resource", "Human Resource"));
+        if (getUser().getModules().getHrmModule()) {
+            getSystemManager().addDashboardTab(
+                    new TabPanel("Human Resource", "Human Resource"));
+        }
 
-        getSystemManager().addDashboardTab(
-                new TabPanel("System Administration", "System Administration"));
+        if (getUser().getModules().getAdminModule()) {
+            getSystemManager().addDashboardTab(
+                    new TabPanel("System Administration", "System Administration"));
+        }
 
     }
 
@@ -1379,9 +1389,13 @@ public class HumanResourceManager implements Serializable,
 
         getSystemManager().getMainTabView().reset(getUser());
 
-        getMainTabView().openTab("System Administration");
+        if (getUser().getModules().getAdminModule()) {
+            getMainTabView().openTab("System Administration");
+        }
 
-        getMainTabView().openTab("Human Resource");
+        if (getUser().getModules().getHrmModule()) {
+            getMainTabView().openTab("Human Resource");
+        }
 
     }
 
