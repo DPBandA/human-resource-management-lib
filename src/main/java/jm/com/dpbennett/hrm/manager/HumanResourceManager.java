@@ -40,6 +40,7 @@ import jm.com.dpbennett.business.entity.Employee;
 import jm.com.dpbennett.business.entity.EmployeePosition;
 import jm.com.dpbennett.business.entity.JobManagerUser;
 import jm.com.dpbennett.business.entity.Laboratory;
+import jm.com.dpbennett.business.entity.Preference;
 import jm.com.dpbennett.business.entity.Subgroup;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import jm.com.dpbennett.sm.manager.SystemManager.LoginActionListener;
@@ -50,6 +51,7 @@ import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import jm.com.dpbennett.sm.util.TabPanel;
 import jm.com.dpbennett.sm.util.Utils;
 import org.primefaces.PrimeFaces;
+import org.primefaces.event.CloseEvent;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.DualListModel;
 
@@ -146,6 +148,33 @@ public class HumanResourceManager implements Serializable,
         userSearchText = "";
 
         getSystemManager().addSingleLoginActionListener(this);
+    }
+
+    public List<String> completePreferenceValue(String query) {
+        EntityManager em;
+
+        try {
+            em = getEntityManager();
+
+            List<String> preferenceValues = Preference.findAllPreferenceValues(em, query);
+
+            return preferenceValues;
+
+        } catch (Exception e) {
+            System.out.println(e);
+
+            return new ArrayList<>();
+        }
+    }
+
+    public void closePreferencesDialog2(CloseEvent closeEvent) {
+        closePreferencesDialog1(null);
+    }
+
+    public void closePreferencesDialog1(ActionEvent actionEvent) {
+
+        PrimeFaces.current().ajax().update("headerForm");
+        PrimeFaces.current().executeScript("PF('preferencesDialog').hide();");
     }
 
     /**
@@ -831,7 +860,7 @@ public class HumanResourceManager implements Serializable,
         }
 
     }
-    
+
     public void editEmailTemplate() {
         PrimeFacesUtils.openDialog(null, "emailTemplateDialog", true, true, true, 550, 700);
     }
@@ -1211,6 +1240,95 @@ public class HumanResourceManager implements Serializable,
         }
 
         return foundEmployees;
+    }
+    
+    public void updatePreferences() {
+        getUser().save(getEntityManager());
+    }
+    
+    public void updatePreferedJobTableView(SelectEvent event) {
+        getUser().save(getEntityManager());
+    }
+    
+     public void updateDashboardTabs(AjaxBehaviorEvent event) {
+
+        switch (event.getComponent().getId()) {
+            case "jobManagementAndTrackingUnit":
+                getSystemManager().getDashboard().addTab(getEntityManager(), "Job Management",
+                        getUser().getModules().getJobManagementAndTrackingModule());
+                getUser().getModules().setIsDirty(true);
+                getUser().save(getEntityManager());
+                break;
+            case "financialAdminUnit":
+                getSystemManager().getDashboard().addTab(getEntityManager(), "Financial Administration",
+                        getUser().getModules().getFinancialAdminModule());
+                getUser().getModules().setIsDirty(true);
+                getUser().save(getEntityManager());
+                break;
+            case "purchaseManagementUnit":
+                getSystemManager().getDashboard().addTab(getEntityManager(), "Procurement",
+                        getUser().getModules().getPurchaseManagementModule());
+                getUser().getModules().setIsDirty(true);
+                getUser().save(getEntityManager());
+                break;    
+            case "adminUnit":
+                getSystemManager().getDashboard().addTab(getEntityManager(), "System Administration",
+                        getUser().getModules().getAdminModule());
+                getUser().getModules().setIsDirty(true);
+                getUser().save(getEntityManager());
+                break;
+            case "complianceUnit":
+                getSystemManager().getDashboard().addTab(getEntityManager(), "Standards Compliance",
+                        getUser().getModules().getComplianceModule());
+                getUser().getModules().setIsDirty(true);
+                getUser().save(getEntityManager());
+                break;
+            case "foodsUnit":
+                getSystemManager().getDashboard().addTab(getEntityManager(), "Foods Inspectorate",
+                        getUser().getModules().getFoodsModule());
+                getUser().getModules().setIsDirty(true);
+                getUser().save(getEntityManager());
+                break;
+            case "standardsUnit":
+                getSystemManager().getDashboard().addTab(getEntityManager(), "Standards",
+                        getUser().getModules().getStandardsModule());
+                getUser().getModules().setIsDirty(true);
+                getUser().save(getEntityManager());
+                break;
+            case "certificationUnit":
+                getSystemManager().getDashboard().addTab(getEntityManager(), "Certification",
+                        getUser().getModules().getCertificationModule());
+                getUser().getModules().setIsDirty(true);
+                getUser().save(getEntityManager());
+                break;
+            case "serviceRequestUnit":
+                getSystemManager().getDashboard().addTab(getEntityManager(), "Service Request",
+                        getUser().getModules().getServiceRequestModule());
+                getUser().getModules().setIsDirty(true);
+                getUser().save(getEntityManager());
+                break;
+            case "legalOfficeUnit":
+                getSystemManager().getDashboard().addTab(getEntityManager(), "Document Management",
+                        getUser().getModules().getLegalOfficeModule());
+                getUser().getModules().setIsDirty(true);
+                getUser().save(getEntityManager());
+                break;
+            case "crmUnit":
+                getSystemManager().getDashboard().addTab(getEntityManager(), "Client Management",
+                        getUser().getModules().getCrmModule());
+                getUser().getModules().setIsDirty(true);
+                getUser().save(getEntityManager());
+                break;
+            case "legalMetrologyUnit":
+                getSystemManager().getDashboard().addTab(getEntityManager(), "Legal Metrology",
+                        getUser().getModules().getLegalMetrologyModule());
+                getUser().getModules().setIsDirty(true);
+                getUser().save(getEntityManager());
+                break;
+            default:
+                break;
+        }
+
     }
 
     public JobManagerUser getUser() {
