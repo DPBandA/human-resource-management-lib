@@ -50,7 +50,6 @@ import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import jm.com.dpbennett.sm.util.TabPanel;
 import jm.com.dpbennett.sm.util.Utils;
 import org.primefaces.PrimeFaces;
-import org.primefaces.component.tabview.Tab;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.DualListModel;
 
@@ -63,10 +62,6 @@ public class HumanResourceManager implements Serializable,
 
     @PersistenceUnit(unitName = "JMTSPU")
     private EntityManagerFactory EMF;
-    private int activeTabIndex;
-    private int activeNavigationTabIndex;
-    private String activeTabForm;
-    private Tab activeTab;
     private String dateSearchField;
     private String dateSearchPeriod;
     private String searchType;
@@ -124,9 +119,6 @@ public class HumanResourceManager implements Serializable,
     }
 
     private void init() {
-        activeTabIndex = 0;
-        activeNavigationTabIndex = 0;
-        activeTabForm = "";
         searchType = "General";
         dateSearchField = "dateReceived";
         dateSearchPeriod = "thisMonth";
@@ -742,7 +734,6 @@ public class HumanResourceManager implements Serializable,
         return foundBusinesses;
     }
 
-    // tk to which pick list does dual list does this belong?
     public void okPickList() {
         closeDialog(null);
     }
@@ -852,6 +843,7 @@ public class HumanResourceManager implements Serializable,
         editEmailTemplate();
     }
 
+    // tk make system options
     public List getEmailCategories() {
         ArrayList categories = new ArrayList();
 
@@ -862,6 +854,7 @@ public class HumanResourceManager implements Serializable,
         return categories;
     }
 
+    // tk make system options
     public List getEmailTypes() {
         ArrayList categories = new ArrayList();
 
@@ -872,6 +865,7 @@ public class HumanResourceManager implements Serializable,
         return categories;
     }
 
+    // tk make system options
     public List getContentTypes() {
         ArrayList types = new ArrayList();
 
@@ -962,14 +956,6 @@ public class HumanResourceManager implements Serializable,
 
     public void setSearchTextVisible(Boolean searchTextVisible) {
         this.searchTextVisible = searchTextVisible;
-    }
-
-    public int getActiveNavigationTabIndex() {
-        return activeNavigationTabIndex;
-    }
-
-    public void setActiveNavigationTabIndex(int activeNavigationTabIndex) {
-        this.activeNavigationTabIndex = activeNavigationTabIndex;
     }
 
     public void closeDialog(ActionEvent actionEvent) {
@@ -1143,14 +1129,6 @@ public class HumanResourceManager implements Serializable,
         PrimeFacesUtils.openDialog(null, "divisionDialog", true, true, true, 600, 700);
     }
 
-    public Tab getActiveTab() {
-        return activeTab;
-    }
-
-    public void setActiveTab(Tab activeTab) {
-        this.activeTab = activeTab;
-    }
-
     public String getDateSearchField() {
         return dateSearchField;
     }
@@ -1227,32 +1205,12 @@ public class HumanResourceManager implements Serializable,
         return Employee.findAllEmployees(getEntityManager());
     }
 
-    public List<JobManagerUser> getLoggedInJobManagerUsers() {
-        return new ArrayList<>();
-    }
-
     public List<Employee> getFoundEmployees() {
         if (foundEmployees == null) {
             foundEmployees = Employee.findAllActiveEmployees(getEntityManager());
         }
 
         return foundEmployees;
-    }
-
-    public int getActiveTabIndex() {
-        return activeTabIndex;
-    }
-
-    public String getActiveTabForm() {
-        return activeTabForm;
-    }
-
-    public void setActiveTabForm(String activeTabForm) {
-        this.activeTabForm = activeTabForm;
-    }
-
-    public void setActiveTabIndex(int activeTabIndex) {
-        this.activeTabIndex = activeTabIndex;
     }
 
     public JobManagerUser getUser() {
