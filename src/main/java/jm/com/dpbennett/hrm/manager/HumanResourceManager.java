@@ -50,6 +50,7 @@ import jm.com.dpbennett.sm.util.MainTabView;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import jm.com.dpbennett.sm.util.TabPanel;
 import jm.com.dpbennett.sm.util.Utils;
+import static jm.com.dpbennett.sm.manager.SystemManager.getStringListAsSelectItems;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.CloseEvent;
 import org.primefaces.event.SelectEvent;
@@ -148,6 +149,11 @@ public class HumanResourceManager implements Serializable,
         userSearchText = "";
 
         getSystemManager().addSingleLoginActionListener(this);
+    }
+    
+    public List getContactTypes() {
+
+        return getStringListAsSelectItems(getEntityManager(), "personalContactTypes");
     }
 
     public List<String> completePreferenceValue(String query) {
