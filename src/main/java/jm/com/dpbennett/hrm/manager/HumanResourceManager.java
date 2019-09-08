@@ -1377,7 +1377,7 @@ public class HumanResourceManager implements Serializable,
 
     private void initDashboard() {
 
-        getSystemManager().getDashboard().reset(getUser());
+        //getSystemManager().getDashboard().reset(getUser());
 
         if (getUser().getModules().getHrmModule()) {
             getSystemManager().addDashboardTab(
@@ -1393,7 +1393,7 @@ public class HumanResourceManager implements Serializable,
 
     private void initMainTabView() {
 
-        getSystemManager().getMainTabView().reset(getUser());
+        //getSystemManager().getMainTabView().reset(getUser());
 
         if (getUser().getModules().getAdminModule()) {
             getMainTabView().openTab("System Administration");
