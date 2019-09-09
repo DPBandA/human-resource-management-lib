@@ -149,8 +149,9 @@ public class HumanResourceManager implements Serializable,
         userSearchText = "";
 
         getSystemManager().addSingleLoginActionListener(this);
+        getSystemManager().addSingleSearchActionListener(this);
     }
-    
+
     public List getContactTypes() {
 
         return getStringListAsSelectItems(getEntityManager(), "personalContactTypes");
@@ -1264,79 +1265,79 @@ public class HumanResourceManager implements Serializable,
 
         switch (event.getComponent().getId()) {
             case "jobManagementAndTrackingUnit":
-                getSystemManager().getDashboard().addTab(getEntityManager(), "Job Management",
+                getSystemManager().getDashboard().addTab("Job Management",
                         getUser().getModules().getJobManagementAndTrackingModule());
                 getUser().getModules().setIsDirty(true);
                 getUser().save(getEntityManager());
                 break;
             case "financialAdminUnit":
-                getSystemManager().getDashboard().addTab(getEntityManager(), "Financial Administration",
+                getSystemManager().getDashboard().addTab("Financial Administration",
                         getUser().getModules().getFinancialAdminModule());
                 getUser().getModules().setIsDirty(true);
                 getUser().save(getEntityManager());
                 break;
             case "purchaseManagementUnit":
-                getSystemManager().getDashboard().addTab(getEntityManager(), "Procurement",
+                getSystemManager().getDashboard().addTab("Procurement",
                         getUser().getModules().getPurchaseManagementModule());
                 getUser().getModules().setIsDirty(true);
                 getUser().save(getEntityManager());
                 break;
             case "adminUnit":
-                getSystemManager().getDashboard().addTab(getEntityManager(), "System Administration",
+                getSystemManager().getDashboard().addTab("System Administration",
                         getUser().getModules().getAdminModule());
                 getUser().getModules().setIsDirty(true);
                 getUser().save(getEntityManager());
                 break;
             case "complianceUnit":
-                getSystemManager().getDashboard().addTab(getEntityManager(), "Standards Compliance",
+                getSystemManager().getDashboard().addTab("Standards Compliance",
                         getUser().getModules().getComplianceModule());
                 getUser().getModules().setIsDirty(true);
                 getUser().save(getEntityManager());
                 break;
             case "foodsUnit":
-                getSystemManager().getDashboard().addTab(getEntityManager(), "Foods Inspectorate",
+                getSystemManager().getDashboard().addTab("Foods Inspectorate",
                         getUser().getModules().getFoodsModule());
                 getUser().getModules().setIsDirty(true);
                 getUser().save(getEntityManager());
                 break;
             case "standardsUnit":
-                getSystemManager().getDashboard().addTab(getEntityManager(), "Standards",
+                getSystemManager().getDashboard().addTab("Standards",
                         getUser().getModules().getStandardsModule());
                 getUser().getModules().setIsDirty(true);
                 getUser().save(getEntityManager());
                 break;
             case "certificationUnit":
-                getSystemManager().getDashboard().addTab(getEntityManager(), "Certification",
+                getSystemManager().getDashboard().addTab("Certification",
                         getUser().getModules().getCertificationModule());
                 getUser().getModules().setIsDirty(true);
                 getUser().save(getEntityManager());
                 break;
             case "serviceRequestUnit":
-                getSystemManager().getDashboard().addTab(getEntityManager(), "Service Request",
+                getSystemManager().getDashboard().addTab("Service Request",
                         getUser().getModules().getServiceRequestModule());
                 getUser().getModules().setIsDirty(true);
                 getUser().save(getEntityManager());
                 break;
             case "legalOfficeUnit":
-                getSystemManager().getDashboard().addTab(getEntityManager(), "Document Management",
+                getSystemManager().getDashboard().addTab("Document Management",
                         getUser().getModules().getLegalOfficeModule());
                 getUser().getModules().setIsDirty(true);
                 getUser().save(getEntityManager());
                 break;
             case "crmUnit":
-                getSystemManager().getDashboard().addTab(getEntityManager(), "Client Management",
+                getSystemManager().getDashboard().addTab("Client Management",
                         getUser().getModules().getCrmModule());
                 getUser().getModules().setIsDirty(true);
                 getUser().save(getEntityManager());
                 break;
             case "legalMetrologyUnit":
-                getSystemManager().getDashboard().addTab(getEntityManager(), "Legal Metrology",
+                getSystemManager().getDashboard().addTab("Legal Metrology",
                         getUser().getModules().getLegalMetrologyModule());
                 getUser().getModules().setIsDirty(true);
                 getUser().save(getEntityManager());
                 break;
             case "hrmUnit":
-                getSystemManager().getDashboard().addTab(getEntityManager(), "Human Resource",
+                getSystemManager().getDashboard().addTab("Human Resource",
                         getUser().getModules().getHrmModule());
                 getUser().getModules().setIsDirty(true);
                 getUser().save(getEntityManager());
@@ -1368,32 +1369,24 @@ public class HumanResourceManager implements Serializable,
 
     @Override
     public void doLogin() {
-
         initDashboard();
         initMainTabView();
 
-        getSystemManager().addSingleSearchActionListener(this);
     }
 
     private void initDashboard() {
 
-        //getSystemManager().getDashboard().reset(getUser());
-
         if (getUser().getModules().getHrmModule()) {
-            getSystemManager().addDashboardTab(
-                    new TabPanel("Human Resource", "Human Resource"));
+            getSystemManager().getDashboard().openTab("Human Resource");
         }
 
         if (getUser().getModules().getAdminModule()) {
-            getSystemManager().addDashboardTab(
-                    new TabPanel("System Administration", "System Administration"));
+            getSystemManager().getDashboard().openTab("System Administration");
         }
 
     }
 
     private void initMainTabView() {
-
-        //getSystemManager().getMainTabView().reset(getUser());
 
         if (getUser().getModules().getAdminModule()) {
             getMainTabView().openTab("System Administration");
