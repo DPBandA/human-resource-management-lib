@@ -1380,20 +1380,12 @@ public class HumanResourceManager implements Serializable,
             getSystemManager().getDashboard().openTab("Human Resource");
         }
 
-        if (getUser().getModules().getAdminModule()) {
-            getSystemManager().getDashboard().openTab("System Administration");
-        }
-
     }
 
     private void initMainTabView() {
 
-        if (getUser().getModules().getAdminModule()) {
-            getMainTabView().openTab("System Administration");
-        }
-
         if (getUser().getModules().getHrmModule()) {
-            getMainTabView().openTab("Human Resource");
+            getSystemManager().getMainTabView().openTab("Human Resource");
         }
 
     }
