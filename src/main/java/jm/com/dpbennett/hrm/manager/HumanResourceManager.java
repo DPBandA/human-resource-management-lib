@@ -1347,7 +1347,7 @@ public class HumanResourceManager implements Serializable,
                 getUser().save(getEntityManager());
                 break;
             case "reportUnit":
-                getSystemManager().getDashboard().addTab("Report",
+                getSystemManager().getDashboard().addTab("Report Management",
                         getUser().getModules().getReportModule());
                 getUser().getModules().setIsDirty(true);
                 getUser().save(getEntityManager());
