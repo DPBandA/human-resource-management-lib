@@ -299,6 +299,10 @@ public class HumanResourceManager implements Serializable,
                 getSelectedUser().getModules().setAdminModule(getSelectedUser().
                         getPrivilege().getCanBeJMTSAdministrator());
                 break;
+            case "canAccessReportUnit":
+                getSelectedUser().getModules().setReportModule(getSelectedUser().
+                        getPrivilege().getCanAccessReportUnit());
+                break;    
             default:
                 break;
 
@@ -1342,6 +1346,12 @@ public class HumanResourceManager implements Serializable,
                 getUser().getModules().setIsDirty(true);
                 getUser().save(getEntityManager());
                 break;
+            case "reportUnit":
+                getSystemManager().getDashboard().addTab("Report",
+                        getUser().getModules().getReportModule());
+                getUser().getModules().setIsDirty(true);
+                getUser().save(getEntityManager());
+                break;    
             default:
                 break;
         }
