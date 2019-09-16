@@ -44,11 +44,9 @@ import jm.com.dpbennett.business.entity.Preference;
 import jm.com.dpbennett.business.entity.Subgroup;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import jm.com.dpbennett.sm.manager.SystemManager.LoginActionListener;
-import jm.com.dpbennett.sm.manager.SystemManager.SearchActionListener;
 import jm.com.dpbennett.sm.util.BeanUtils;
 import jm.com.dpbennett.sm.util.MainTabView;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
-import jm.com.dpbennett.sm.util.TabPanel;
 import jm.com.dpbennett.sm.util.Utils;
 import static jm.com.dpbennett.sm.manager.SystemManager.getStringListAsSelectItems;
 import org.primefaces.PrimeFaces;
@@ -60,8 +58,7 @@ import org.primefaces.model.DualListModel;
  *
  * @author Desmond Bennett
  */
-public class HumanResourceManager implements Serializable,
-        SearchActionListener, LoginActionListener {
+public class HumanResourceManager implements Serializable, LoginActionListener {
 
     @PersistenceUnit(unitName = "JMTSPU")
     private EntityManagerFactory EMF;
@@ -149,7 +146,6 @@ public class HumanResourceManager implements Serializable,
         userSearchText = "";
 
         getSystemManager().addSingleLoginActionListener(this);
-        getSystemManager().addSingleSearchActionListener(this);
     }
 
     public List getContactTypes() {
@@ -1366,11 +1362,10 @@ public class HumanResourceManager implements Serializable,
         return EMF.createEntityManager();
     }
 
-    @Override
     public void doDefaultSearch() {
         switch (getSystemManager().getDashboard().getSelectedTabId()) {
             case "Human Resource":
-                //getPurchasingManager().doDefaultSearch();
+                
                 break;
             default:
                 break;
