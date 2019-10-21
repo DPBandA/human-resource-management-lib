@@ -557,6 +557,21 @@ public class HumanResourceManager implements Serializable, LoginActionListener {
             return new ArrayList<>();
         }
     }
+    
+    public List<BusinessOffice> completeActiveBusinessOffice(String query) {
+        EntityManager em;
+
+        try {
+            em = getEntityManager();
+
+            List<BusinessOffice> businessOffices = BusinessOffice.findActiveBusinessOfficesByName(em, query);
+
+            return businessOffices;
+
+        } catch (Exception e) {
+            return new ArrayList<>();
+        }
+    }
 
     public Boolean getIsActiveEmployeePositionsOnly() {
         return isActiveEmployeePositionsOnly;
