@@ -25,8 +25,8 @@ import javax.faces.context.FacesContext;
 import javax.faces.validator.FacesValidator;
 import javax.faces.validator.Validator;
 import javax.faces.validator.ValidatorException;
-import jm.com.dpbennett.business.entity.Contact;
-import jm.com.dpbennett.business.entity.utils.BusinessEntityUtils;
+import jm.com.dpbennett.business.entity.hrm.Contact;
+import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 
 /**
  *

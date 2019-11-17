@@ -24,7 +24,7 @@ import java.util.HashMap;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
-import jm.com.dpbennett.business.entity.Department;
+import jm.com.dpbennett.business.entity.hrm.Department;
 import org.junit.Test;
 
 /**
