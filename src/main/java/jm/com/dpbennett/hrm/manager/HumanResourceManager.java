@@ -38,7 +38,7 @@ import jm.com.dpbennett.business.entity.hrm.Division;
 import jm.com.dpbennett.business.entity.hrm.Email;
 import jm.com.dpbennett.business.entity.hrm.Employee;
 import jm.com.dpbennett.business.entity.hrm.EmployeePosition;
-import jm.com.dpbennett.business.entity.jmts.JobManagerUser;
+import jm.com.dpbennett.business.entity.hrm.User;
 import jm.com.dpbennett.business.entity.hrm.Laboratory;
 import jm.com.dpbennett.business.entity.sm.Preference;
 import jm.com.dpbennett.business.entity.hrm.Subgroup;
@@ -106,10 +106,10 @@ public class HumanResourceManager implements Serializable, LoginActionListener {
     private Business selectedBusiness;
     private Email selectedEmail;
     // User related
-    private JobManagerUser selectedUser;
-    private JobManagerUser foundUser;
+    private User selectedUser;
+    private User foundUser;
     private String userSearchText;
-    private List<JobManagerUser> foundUsers;
+    private List<User> foundUsers;
 
     /**
      * Creates a new instance of SystemManager
@@ -308,9 +308,9 @@ public class HumanResourceManager implements Serializable, LoginActionListener {
         getSelectedUser().getModules().setIsDirty(true);
     }
 
-    public List<JobManagerUser> getFoundUsers() {
+    public List<User> getFoundUsers() {
         if (foundUsers == null) {
-            foundUsers = JobManagerUser.findAllActiveJobManagerUsers(getEntityManager());
+            foundUsers = User.findAllActiveJobManagerUsers(getEntityManager());
         }
         return foundUsers;
     }
@@ -326,9 +326,9 @@ public class HumanResourceManager implements Serializable, LoginActionListener {
     public void doUserSearch() {
 
         if (getIsActiveUsersOnly()) {
-            foundUsers = JobManagerUser.findActiveJobManagerUsersByName(getEntityManager(), getUserSearchText());
+            foundUsers = User.findActiveJobManagerUsersByName(getEntityManager(), getUserSearchText());
         } else {
-            foundUsers = JobManagerUser.findJobManagerUsersByName(getEntityManager(), getUserSearchText());
+            foundUsers = User.findJobManagerUsersByName(getEntityManager(), getUserSearchText());
         }
 
     }
@@ -338,7 +338,7 @@ public class HumanResourceManager implements Serializable, LoginActionListener {
         if (foundUser != null) {
             return foundUser.getUsername();
         } else {
-            foundUser = new JobManagerUser();
+            foundUser = new User();
             foundUser.setUsername("");
 
             return foundUser.getUsername();
@@ -353,16 +353,16 @@ public class HumanResourceManager implements Serializable, LoginActionListener {
         PrimeFacesUtils.openDialog(getSelectedUser(), "userDialog", true, true, true, 430, 750);
     }
 
-    public JobManagerUser getSelectedUser() {
+    public User getSelectedUser() {
         // init with current logged on user if null
         if (selectedUser == null) {
-            selectedUser = new JobManagerUser();
+            selectedUser = new User();
         }
 
         return selectedUser;
     }
 
-    public void setSelectedUser(JobManagerUser selectedUser) {
+    public void setSelectedUser(User selectedUser) {
         this.selectedUser = selectedUser;
     }
 
@@ -401,7 +401,7 @@ public class HumanResourceManager implements Serializable, LoginActionListener {
         EntityManager em = getEntityManager();
 
         if (selectedUser.getId() != null) {
-            selectedUser = JobManagerUser.findJobManagerUserById(em, selectedUser.getId());
+            selectedUser = User.findJobManagerUserById(em, selectedUser.getId());
         }
     }
 
@@ -409,7 +409,7 @@ public class HumanResourceManager implements Serializable, LoginActionListener {
 
         EntityManager em = getEntityManager();
 
-        JobManagerUser u = JobManagerUser.findJobManagerUserByUsername(em, foundUser.getUsername().trim());
+        User u = User.findJobManagerUserByUsername(em, foundUser.getUsername().trim());
         if (u != null) {
             foundUser = u;
             selectedUser = u;
@@ -419,11 +419,11 @@ public class HumanResourceManager implements Serializable, LoginActionListener {
     public List<String> completeUser(String query) {
 
         try {
-            List<JobManagerUser> users = JobManagerUser.findJobManagerUsersByUsername(getEntityManager(), query);
+            List<User> users = User.findJobManagerUsersByUsername(getEntityManager(), query);
             List<String> suggestions = new ArrayList<>();
             if (users != null) {
                 if (!users.isEmpty()) {
-                    for (JobManagerUser u : users) {
+                    for (User u : users) {
                         suggestions.add(u.getUsername());
                     }
                 }
@@ -440,7 +440,7 @@ public class HumanResourceManager implements Serializable, LoginActionListener {
     public void createNewUser() {
         EntityManager em = getEntityManager();
 
-        selectedUser = new JobManagerUser();
+        selectedUser = new User();
         selectedUser.setEmployee(Employee.findDefaultEmployee(em, "--", "--", true));
 
         editUser();
@@ -1369,7 +1369,7 @@ public class HumanResourceManager implements Serializable, LoginActionListener {
 
     }
 
-    public JobManagerUser getUser() {
+    public User getUser() {
         return getSystemManager().getUser();
     }
 
