@@ -119,31 +119,7 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
     }
 
     private void init() {
-        searchType = "General";
-        dateSearchField = "dateReceived";
-        dateSearchPeriod = "thisMonth";
-        searchTextVisible = true;
-        // Search texts
-        searchText = "";
-        employeeSearchText = "";
-        employeePositionSearchText = "";
-        departmentSearchText = "";
-        subgroupSearchText = "";
-        divisionSearchText = "";
-        businessSearchText = "";
-        emailSearchText = "";
-        // Active objects
-        isActiveUsersOnly = true;
-        isActiveEmployeesOnly = true;
-        isActiveEmployeePositionsOnly = true;
-        isActiveDepartmentsOnly = true;
-        isActiveBusinessesOnly = true;
-        isActiveSubgroupsOnly = true;
-        isActiveDivisionsOnly = true;
-        isActiveEmailsOnly = true;
-        // User related
-        foundUsers = null;
-        userSearchText = "";
+        reset();
 
         getSystemManager().addSingleAuthenticationListener(this);
     }
@@ -298,7 +274,7 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
             case "canAccessReportUnit":
                 getSelectedUser().getModules().setReportModule(getSelectedUser().
                         getPrivilege().getCanAccessReportUnit());
-                break;    
+                break;
             default:
                 break;
 
@@ -557,7 +533,7 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
             return new ArrayList<>();
         }
     }
-    
+
     public List<BusinessOffice> completeActiveBusinessOffice(String query) {
         EntityManager em;
 
@@ -689,7 +665,31 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
     }
 
     public void reset() {
-        init();
+        searchType = "General";
+        dateSearchField = "dateReceived";
+        dateSearchPeriod = "thisMonth";
+        searchTextVisible = true;
+        // Search texts
+        searchText = "";
+        employeeSearchText = "";
+        employeePositionSearchText = "";
+        departmentSearchText = "";
+        subgroupSearchText = "";
+        divisionSearchText = "";
+        businessSearchText = "";
+        emailSearchText = "";
+        // Active objects
+        isActiveUsersOnly = true;
+        isActiveEmployeesOnly = true;
+        isActiveEmployeePositionsOnly = true;
+        isActiveDepartmentsOnly = true;
+        isActiveBusinessesOnly = true;
+        isActiveSubgroupsOnly = true;
+        isActiveDivisionsOnly = true;
+        isActiveEmailsOnly = true;
+        // User related
+        foundUsers = null;
+        userSearchText = "";
     }
 
     public Boolean getIsActiveDepartmentsOnly() {
@@ -1362,7 +1362,7 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
                         getUser().getModules().getReportModule());
                 getUser().getModules().setIsDirty(true);
                 getUser().save(getEntityManager());
-                break;    
+                break;
             default:
                 break;
         }
@@ -1380,7 +1380,7 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
     public void doDefaultSearch() {
         switch (getSystemManager().getDashboard().getSelectedTabId()) {
             case "Human Resource":
-                
+
                 break;
             default:
                 break;
@@ -1411,7 +1411,7 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
 
     @Override
     public void completeLogout() {
-        System.out.println("Complete logout...");
+        reset();
     }
 
 }
