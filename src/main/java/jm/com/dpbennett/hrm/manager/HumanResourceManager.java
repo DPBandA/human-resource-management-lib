@@ -42,8 +42,8 @@ import jm.com.dpbennett.business.entity.hrm.User;
 import jm.com.dpbennett.business.entity.hrm.Laboratory;
 import jm.com.dpbennett.business.entity.sm.Preference;
 import jm.com.dpbennett.business.entity.hrm.Subgroup;
+import jm.com.dpbennett.sm.Authentication.AuthenticationListener;
 import jm.com.dpbennett.sm.manager.SystemManager;
-import jm.com.dpbennett.sm.manager.SystemManager.LoginActionListener;
 import jm.com.dpbennett.sm.util.BeanUtils;
 import jm.com.dpbennett.sm.util.MainTabView;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
@@ -58,7 +58,7 @@ import org.primefaces.model.DualListModel;
  *
  * @author Desmond Bennett
  */
-public class HumanResourceManager implements Serializable, LoginActionListener {
+public class HumanResourceManager implements Serializable, AuthenticationListener {
 
     @PersistenceUnit(unitName = "JMTSPU")
     private EntityManagerFactory EMF;
@@ -145,7 +145,7 @@ public class HumanResourceManager implements Serializable, LoginActionListener {
         foundUsers = null;
         userSearchText = "";
 
-        getSystemManager().addSingleLoginActionListener(this);
+        getSystemManager().addSingleAuthenticationListener(this);
     }
 
     public List getContactTypes() {
@@ -1387,13 +1387,6 @@ public class HumanResourceManager implements Serializable, LoginActionListener {
         }
     }
 
-    @Override
-    public void doLogin() {
-        initDashboard();
-        initMainTabView();
-
-    }
-
     private void initDashboard() {
 
         if (getUser().getModules().getHrmModule()) {
@@ -1408,6 +1401,17 @@ public class HumanResourceManager implements Serializable, LoginActionListener {
             getSystemManager().getMainTabView().openTab("Human Resource");
         }
 
+    }
+
+    @Override
+    public void completeLogin() {
+        initDashboard();
+        initMainTabView();
+    }
+
+    @Override
+    public void completeLogout() {
+        System.out.println("Complete logout...");
     }
 
 }
