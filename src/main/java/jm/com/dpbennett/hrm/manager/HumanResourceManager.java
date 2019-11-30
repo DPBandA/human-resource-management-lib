@@ -123,6 +123,12 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
 
         getSystemManager().addSingleAuthenticationListener(this);
     }
+    
+    public List<SelectItem> getDepartmentLabelList() {
+
+        return getStringListAsSelectItems(getEntityManager(),
+                "departmentLabels");
+    }
 
     public List getContactTypes() {
 
