@@ -1340,7 +1340,7 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
                 getUser().save(getEntityManager());
                 break;
             case "legalOfficeUnit":
-                getSystemManager().getDashboard().addTab("Document Management",
+                getSystemManager().getDashboard().addTab("Legal Office",
                         getUser().getModules().getLegalOfficeModule());
                 getUser().getModules().setIsDirty(true);
                 getUser().save(getEntityManager());
