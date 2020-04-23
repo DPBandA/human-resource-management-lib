@@ -95,6 +95,7 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
     private List<Subgroup> foundSubgroups;
     private List<Division> foundDivisions;
     private List<Email> foundEmails;
+    private DualListModel<Employee> employeeDualList;
     private DualListModel<Department> departmentDualList;
     private DualListModel<Subgroup> subgroupDualList;
     // Selected objects
@@ -625,6 +626,14 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
         this.isActiveDivisionsOnly = isActiveDivisionsOnly;
     }
 
+    public DualListModel<Employee> getEmployeeDualList() {
+        return employeeDualList;
+    }
+
+    public void setEmployeeDualList(DualListModel<Employee> employeeDualList) {
+        this.employeeDualList = employeeDualList;
+    }
+
     public DualListModel<Department> getDepartmentDualList() {
         return departmentDualList;
     }
@@ -971,7 +980,7 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
     }
 
     public void editDepartment() {
-        PrimeFacesUtils.openDialog(null, "departmentDialog", true, true, true, 460, 700);
+        PrimeFacesUtils.openDialog(null, "departmentDialog", true, true, true, 600, 700);
     }
 
     public void editEmployeePosition() {
@@ -1100,7 +1109,7 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
 
         selectedDepartment = new Department();
 
-        PrimeFacesUtils.openDialog(null, "departmentDialog", true, true, true, 460, 700);
+        editDepartment();
     }
 
     public void createNewEmployeePosition() {
@@ -1123,6 +1132,27 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
         departmentDualList = new DualListModel<>(source, target);
 
         openDepartmentPickListDialog();
+    }
+    
+    public void addDepartmentStaff() {
+        List<Employee> source = Employee.findAllActiveEmployees(getEntityManager());
+        List<Employee> target = selectedDepartment.getStaff();
+
+        source.removeAll(target);
+
+        employeeDualList = new DualListModel<>(source, target);
+
+        openEmployeePickListDialog();
+    }
+    
+    public void addDepartmentStaffDialogReturn() {
+
+        getSelectedDepartment().setStaff(employeeDualList.getTarget());
+
+    }
+    
+     public void openEmployeePickListDialog() {
+        PrimeFacesUtils.openDialog(null, "employeePickListDialog", true, true, true, 320, 500);
     }
 
     public void addDivisionDepartments() {
