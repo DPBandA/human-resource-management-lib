@@ -25,6 +25,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import jm.com.dpbennett.business.entity.hrm.Department;
+import jm.com.dpbennett.business.entity.hrm.User;
 import org.junit.Test;
 
 /**
@@ -41,21 +42,21 @@ public class HumanResourceManagerTest {
         prop.put("javax.persistence.jdbc.user",
                 "root");
         prop.put("javax.persistence.jdbc.password",
-                ""); // TK REMOVE PWD WHEN DONE
+                "bsj0001"); // TK REMOVE PWD WHEN DONE AND DISABLE TESTING.
         prop.put("javax.persistence.jdbc.url",
-                "jdbc:mysql://localhost:3306/jmts");
+                "jdbc:mysql://172.16.0.10:3306/jmtstest");
         prop.put("javax.persistence.jdbc.driver",
                 "com.mysql.jdbc.Driver");
 
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("PU", prop);
         EntityManager em = emf.createEntityManager();
 
-        Department d = Department.findDepartmentById(em, 20L);
-        if (d != null) {
-            System.out.println("Dept full code: " + HumanResourceManager.getDepartmentFullCode(em, d));
+        User u = User.findActiveJobManagerUserByEmployeeId(em, 261L);
+        if (u != null) {
+             System.out.println("User's organization: " + User.getUserOrganizationByDepartment(em, u).getName());       
         }
         else {
-            System.out.println("Department not found.");
+            System.out.println("Employee not found.");
         }
 
     }
