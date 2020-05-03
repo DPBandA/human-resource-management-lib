@@ -980,7 +980,7 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
     }
 
     public void editDepartment() {
-        PrimeFacesUtils.openDialog(null, "departmentDialog", true, true, true, 600, 700);
+        PrimeFacesUtils.openDialog(null, "departmentDialog", true, true, true, 600, 800);
     }
 
     public void editEmployeePosition() {
