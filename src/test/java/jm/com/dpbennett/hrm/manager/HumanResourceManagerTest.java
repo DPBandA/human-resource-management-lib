@@ -19,7 +19,6 @@ Email: info@dpbennett.com.jm
  */
 package jm.com.dpbennett.hrm.manager;
 
-import jm.com.dpbennett.hrm.manager.HumanResourceManager;
 import java.util.HashMap;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -52,11 +51,17 @@ public class HumanResourceManagerTest {
         EntityManager em = emf.createEntityManager();
 
         User u = User.findActiveJobManagerUserByEmployeeId(em, 261L);
-        if (u != null) {
-             System.out.println("User's organization: " + User.getUserOrganizationByDepartment(em, u).getName());       
+        Department dept = Department.findDepartmentByName(em, "Metallurgy");
+        if ((u != null) && (dept != null)) {
+             if (u.isMemberOf(em, dept))    {
+                 System.out.println("Member of " + dept.getName());
+             } 
+             else {
+                 System.out.println("NOT member of " + dept.getName());
+             }
         }
         else {
-            System.out.println("Employee not found.");
+            System.out.println("User/department not found!");
         }
 
     }
