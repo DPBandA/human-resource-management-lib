@@ -22,7 +22,9 @@ package jm.com.dpbennett.hrm.manager;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+import javax.faces.application.FacesMessage;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.event.ValueChangeEvent;
@@ -30,8 +32,10 @@ import javax.faces.model.SelectItem;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
+import jm.com.dpbennett.business.entity.hrm.Address;
 import jm.com.dpbennett.business.entity.hrm.Business;
 import jm.com.dpbennett.business.entity.hrm.BusinessOffice;
+import jm.com.dpbennett.business.entity.hrm.Contact;
 import jm.com.dpbennett.business.entity.hrm.Department;
 import jm.com.dpbennett.business.entity.hrm.DepartmentUnit;
 import jm.com.dpbennett.business.entity.hrm.Division;
@@ -44,6 +48,8 @@ import jm.com.dpbennett.business.entity.hrm.Manufacturer;
 import jm.com.dpbennett.business.entity.sm.Preference;
 import jm.com.dpbennett.business.entity.hrm.Subgroup;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
+import jm.com.dpbennett.hrm.validator.AddressValidator;
+import jm.com.dpbennett.hrm.validator.ContactValidator;
 import jm.com.dpbennett.sm.Authentication.AuthenticationListener;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import jm.com.dpbennett.sm.util.BeanUtils;
@@ -82,7 +88,6 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
     private Boolean isActiveEmailsOnly;
     private Date startDate;
     private Date endDate;
-    // Search text
     private String searchText;
     private String employeeSearchText;
     private String employeePositionSearchText;
@@ -92,14 +97,13 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
     private String divisionSearchText;
     private String manufacturerSearchText;
     private String emailSearchText;
-    // Found object lists
     private List<Employee> foundEmployees;
     private List<EmployeePosition> foundEmployeePositions;
     private List<Department> foundDepartments;
     private List<Business> foundBusinesses;
     private List<Subgroup> foundSubgroups;
     private List<Division> foundDivisions;
-     private List<Manufacturer> foundManufacturers;
+    private List<Manufacturer> foundManufacturers;
     private List<Email> foundEmails;
     private DualListModel<Employee> employeeDualList;
     private DualListModel<Department> departmentDualList;
@@ -112,12 +116,15 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
     private Division selectedDivision;
     private Business selectedBusiness;
     private Email selectedEmail;
+    private Contact selectedContact;
+    private Address selectedAddress;
     // User related
     private User selectedUser;
     private User foundUser;
     private String userSearchText;
     private List<User> foundUsers;
     private Manufacturer selectedManufacturer;
+    private Boolean edit;
 
     /**
      * Creates a new instance of SystemManager
@@ -130,6 +137,14 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
         reset();
 
         getSystemManager().addSingleAuthenticationListener(this);
+    }
+
+    public Boolean getEdit() {
+        return edit;
+    }
+
+    public void setEdit(Boolean edit) {
+        this.edit = edit;
     }
 
     public List<SelectItem> getDepartmentLabelList() {
@@ -709,9 +724,9 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
         isActiveSubgroupsOnly = true;
         isActiveDivisionsOnly = true;
         isActiveManufacturersOnly = true;
-        isActiveEmailsOnly = true;  
+        isActiveEmailsOnly = true;
         foundManufacturers = new ArrayList<>();
-    } 
+    }
 
     public Boolean getIsActiveDepartmentsOnly() {
 
@@ -1488,7 +1503,7 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
 
     public void editSelectedManufacturer() {
 
-        PrimeFacesUtils.openDialog(null, "manufacturerDialog", true, true, true, 500, 700);
+        PrimeFacesUtils.openDialog(null, "hr/manufacturer/manufacturerDialog", true, true, true, 500, 700);
     }
 
     public String getManufacturerSearchText() {
@@ -1506,7 +1521,7 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
     public void setIsActiveManufacturersOnly(Boolean isActiveManufacturersOnly) {
         this.isActiveManufacturersOnly = isActiveManufacturersOnly;
     }
-    
+
     public void doManufacturerSearch() {
         if (manufacturerSearchText.trim().length() > 1) {
             if (getIsActiveManufacturersOnly()) {
@@ -1518,14 +1533,142 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
             foundManufacturers = new ArrayList<>();
         }
     }
-    
-     public void onManufacturerCellEdit(CellEditEvent event) {
+
+    public void onManufacturerCellEdit(CellEditEvent event) {
         BusinessEntityUtils.saveBusinessEntityInTransaction(getEntityManager(),
                 getFoundManufacturers().get(event.getRowIndex()));
     }
-     
-     public int getNumManufacturersFound() {
+
+    public int getNumManufacturersFound() {
         return getFoundManufacturers().size();
+    }
+
+    public void okManufacturer() {
+        Boolean hasValidAddress = false;
+        Boolean hasValidContact = false;
+
+        try {
+
+            // Validate 
+            // Check for a valid address
+            for (Address address : selectedManufacturer.getAddresses()) {
+                hasValidAddress = hasValidAddress || AddressValidator.validate(address);
+            }
+            if (!hasValidAddress) {
+                PrimeFacesUtils.addMessage("Address Required",
+                        "A valid address was not entered for this manufacturer",
+                        FacesMessage.SEVERITY_ERROR);
+
+                return;
+            }
+
+            // Check for a valid contact
+            for (Contact contact : getSelectedManufacturer().getContacts()) {
+                hasValidContact = hasValidContact || ContactValidator.validate(contact);
+            }
+            if (!hasValidContact) {
+                PrimeFacesUtils.addMessage("Contact Required",
+                        "A valid contact was not entered for this manufacturer",
+                        FacesMessage.SEVERITY_ERROR);
+
+                return;
+            }
+
+            // Do save
+            if (getSelectedManufacturer().getIsDirty()) {
+
+                getSelectedManufacturer().save(getEntityManager());
+                getSelectedManufacturer().setIsDirty(false);
+            }
+
+            PrimeFaces.current().dialog().closeDynamic(null);
+
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
+    public void cancelManufacturerEdit(ActionEvent actionEvent) {
+
+        getSelectedManufacturer().setIsDirty(false);
+
+        // Remove unsaved addresses
+        Iterator addressIterator = getSelectedManufacturer().getAddresses().iterator();
+        Address address;
+        while (addressIterator.hasNext()) {
+            address = (Address) addressIterator.next();
+            if (address.getId() == null) {
+                addressIterator.remove();
+            }
+        }
+        // Remove unsaved contacts
+        Iterator contactIterator = getSelectedManufacturer().getContacts().iterator();
+        Contact contact;
+        while (contactIterator.hasNext()) {
+            contact = (Contact) contactIterator.next();
+            if (contact.getId() == null) {
+                contactIterator.remove();
+            }
+        }
+
+        PrimeFaces.current().dialog().closeDynamic(null);
+    }
+
+    public void updateManufacturer() {
+        getSelectedManufacturer().setIsDirty(true);
+    }
+
+    public void updateManufacturerName(AjaxBehaviorEvent event) {
+        selectedManufacturer.setName(selectedManufacturer.getName().trim());
+
+        updateManufacturer();
+    }
+
+    public void createNewAddress() {
+        selectedAddress = null;
+
+        // Find an existing invalid or blank address and use it as the neww address
+        for (Address address : getSelectedManufacturer().getAddresses()) {
+            if (address.getAddressLine1().trim().isEmpty()) {
+                selectedAddress = address;
+                break;
+            }
+        }
+
+        // No existing blank or invalid address found so creating new one.
+        if (selectedAddress == null) {
+            selectedAddress = new Address("", "Billing");
+        }
+
+        setEdit(false);
+
+        getSelectedManufacturer().setIsDirty(false);
+    }
+
+    public Contact getSelectedContact() {
+        return selectedContact;
+    }
+
+    public void setSelectedContact(Contact selectedContact) {
+        this.selectedContact = selectedContact;
+
+        setEdit(true);
+    }
+
+    public Address getSelectedAddress() {
+        return selectedAddress;
+    }
+
+    public void setSelectedAddress(Address selectedAddress) {
+        this.selectedAddress = selectedAddress;
+    }
+
+    public List<Address> getAddressesModel() {
+        return getSelectedManufacturer().getAddresses();
+    }
+
+    public List<Contact> getContactsModel() {
+        return getSelectedManufacturer().getContacts();
     }
 
 }
