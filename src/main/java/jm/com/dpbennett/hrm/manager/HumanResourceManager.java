@@ -40,8 +40,10 @@ import jm.com.dpbennett.business.entity.hrm.Employee;
 import jm.com.dpbennett.business.entity.hrm.EmployeePosition;
 import jm.com.dpbennett.business.entity.hrm.User;
 import jm.com.dpbennett.business.entity.hrm.Laboratory;
+import jm.com.dpbennett.business.entity.hrm.Manufacturer;
 import jm.com.dpbennett.business.entity.sm.Preference;
 import jm.com.dpbennett.business.entity.hrm.Subgroup;
+import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.sm.Authentication.AuthenticationListener;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import jm.com.dpbennett.sm.util.BeanUtils;
@@ -50,6 +52,7 @@ import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import jm.com.dpbennett.sm.util.Utils;
 import static jm.com.dpbennett.sm.manager.SystemManager.getStringListAsSelectItems;
 import org.primefaces.PrimeFaces;
+import org.primefaces.event.CellEditEvent;
 import org.primefaces.event.CloseEvent;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.DualListModel;
@@ -75,6 +78,7 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
     private Boolean isActiveBusinessesOnly;
     private Boolean isActiveSubgroupsOnly;
     private Boolean isActiveDivisionsOnly;
+    private Boolean isActiveManufacturersOnly;
     private Boolean isActiveEmailsOnly;
     private Date startDate;
     private Date endDate;
@@ -86,6 +90,7 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
     private String businessSearchText;
     private String subgroupSearchText;
     private String divisionSearchText;
+    private String manufacturerSearchText;
     private String emailSearchText;
     // Found object lists
     private List<Employee> foundEmployees;
@@ -94,6 +99,7 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
     private List<Business> foundBusinesses;
     private List<Subgroup> foundSubgroups;
     private List<Division> foundDivisions;
+     private List<Manufacturer> foundManufacturers;
     private List<Email> foundEmails;
     private DualListModel<Employee> employeeDualList;
     private DualListModel<Department> departmentDualList;
@@ -111,6 +117,7 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
     private User foundUser;
     private String userSearchText;
     private List<User> foundUsers;
+    private Manufacturer selectedManufacturer;
 
     /**
      * Creates a new instance of SystemManager
@@ -124,7 +131,7 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
 
         getSystemManager().addSingleAuthenticationListener(this);
     }
-    
+
     public List<SelectItem> getDepartmentLabelList() {
 
         return getStringListAsSelectItems(getEntityManager(),
@@ -684,7 +691,6 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
         dateSearchField = "dateReceived";
         dateSearchPeriod = "thisMonth";
         searchTextVisible = true;
-        // Search texts
         searchText = "";
         employeeSearchText = "";
         employeePositionSearchText = "";
@@ -692,8 +698,9 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
         subgroupSearchText = "";
         divisionSearchText = "";
         businessSearchText = "";
+        manufacturerSearchText = "";
         emailSearchText = "";
-        // Active objects
+        userSearchText = "";
         isActiveUsersOnly = true;
         isActiveEmployeesOnly = true;
         isActiveEmployeePositionsOnly = true;
@@ -701,11 +708,10 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
         isActiveBusinessesOnly = true;
         isActiveSubgroupsOnly = true;
         isActiveDivisionsOnly = true;
-        isActiveEmailsOnly = true;
-        // User related
-        foundUsers = null;
-        userSearchText = "";
-    }
+        isActiveManufacturersOnly = true;
+        isActiveEmailsOnly = true;  
+        foundManufacturers = new ArrayList<>();
+    } 
 
     public Boolean getIsActiveDepartmentsOnly() {
 
@@ -1133,7 +1139,7 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
 
         openDepartmentPickListDialog();
     }
-    
+
     public void addDepartmentStaff() {
         List<Employee> source = Employee.findAllActiveEmployees(getEntityManager());
         List<Employee> target = selectedDepartment.getStaff();
@@ -1144,14 +1150,14 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
 
         openEmployeePickListDialog();
     }
-    
+
     public void addDepartmentStaffDialogReturn() {
 
         getSelectedDepartment().setStaff(employeeDualList.getTarget());
 
     }
-    
-     public void openEmployeePickListDialog() {
+
+    public void openEmployeePickListDialog() {
         PrimeFacesUtils.openDialog(null, "employeePickListDialog", true, true, true, 320, 500);
     }
 
@@ -1448,6 +1454,78 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
     @Override
     public void completeLogout() {
         reset();
+    }
+
+    // Manufacturer Management
+    public Manufacturer getSelectedManufacturer() {
+        if (selectedManufacturer == null) {
+            return new Manufacturer();
+        }
+        return selectedManufacturer;
+    }
+
+    public void setSelectedManufacturer(Manufacturer selectedManufacturer) {
+        this.selectedManufacturer = selectedManufacturer;
+    }
+
+    public List<Manufacturer> getFoundManufacturers() {
+        return foundManufacturers;
+    }
+
+    public void setFoundManufacturers(List<Manufacturer> foundManufacturers) {
+        this.foundManufacturers = foundManufacturers;
+    }
+
+    public void createNewManufacturer() {
+        createNewManufacturer(true);
+
+        editSelectedManufacturer();
+    }
+
+    public void createNewManufacturer(Boolean active) {
+        selectedManufacturer = new Manufacturer("");
+    }
+
+    public void editSelectedManufacturer() {
+
+        PrimeFacesUtils.openDialog(null, "manufacturerDialog", true, true, true, 500, 700);
+    }
+
+    public String getManufacturerSearchText() {
+        return manufacturerSearchText;
+    }
+
+    public void setManufacturerSearchText(String manufacturerSearchText) {
+        this.manufacturerSearchText = manufacturerSearchText;
+    }
+
+    public Boolean getIsActiveManufacturersOnly() {
+        return isActiveManufacturersOnly;
+    }
+
+    public void setIsActiveManufacturersOnly(Boolean isActiveManufacturersOnly) {
+        this.isActiveManufacturersOnly = isActiveManufacturersOnly;
+    }
+    
+    public void doManufacturerSearch() {
+        if (manufacturerSearchText.trim().length() > 1) {
+            if (getIsActiveManufacturersOnly()) {
+                foundManufacturers = Manufacturer.findActiveManufacturersByAnyPartOfName(getEntityManager(), manufacturerSearchText);
+            } else {
+                foundManufacturers = Manufacturer.findManufacturersByAnyPartOfName(getEntityManager(), manufacturerSearchText);
+            }
+        } else {
+            foundManufacturers = new ArrayList<>();
+        }
+    }
+    
+     public void onManufacturerCellEdit(CellEditEvent event) {
+        BusinessEntityUtils.saveBusinessEntityInTransaction(getEntityManager(),
+                getFoundManufacturers().get(event.getRowIndex()));
+    }
+     
+     public int getNumManufacturersFound() {
+        return getFoundManufacturers().size();
     }
 
 }
