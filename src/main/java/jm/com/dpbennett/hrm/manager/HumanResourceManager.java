@@ -42,6 +42,7 @@ import jm.com.dpbennett.business.entity.hrm.Division;
 import jm.com.dpbennett.business.entity.hrm.Email;
 import jm.com.dpbennett.business.entity.hrm.Employee;
 import jm.com.dpbennett.business.entity.hrm.EmployeePosition;
+import jm.com.dpbennett.business.entity.hrm.Internet;
 import jm.com.dpbennett.business.entity.hrm.User;
 import jm.com.dpbennett.business.entity.hrm.Laboratory;
 import jm.com.dpbennett.business.entity.hrm.Manufacturer;
@@ -1644,6 +1645,26 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
 
         getSelectedManufacturer().setIsDirty(false);
     }
+    
+    public void createNewContact() {
+        selectedContact = null;
+
+        for (Contact contact : getSelectedManufacturer().getContacts()) {
+            if (contact.getFirstName().trim().isEmpty()) {
+                selectedContact = contact;
+                break;
+            }
+        }
+
+        if (selectedContact == null) {
+            selectedContact = new Contact("", "", "Main");
+            selectedContact.setInternet(new Internet());
+        }
+
+        setEdit(false);
+
+        getSelectedManufacturer().setIsDirty(false);
+    }
 
     public Contact getSelectedContact() {
         return selectedContact;
@@ -1669,6 +1690,58 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
 
     public List<Contact> getContactsModel() {
         return getSelectedManufacturer().getContacts();
+    }
+    
+    public void okAddress() {
+
+        selectedAddress = selectedAddress.prepare();
+
+        if (getIsNewAddress()) {
+            getSelectedManufacturer().getAddresses().add(selectedAddress);
+        }
+
+        PrimeFaces.current().executeScript("PF('addressFormDialog').hide();");
+
+    }
+    
+    public void okContact() {
+
+        selectedContact = selectedContact.prepare();
+
+        if (getIsNewContact()) {
+            getSelectedManufacturer().getContacts().add(selectedContact);
+        }
+
+        PrimeFaces.current().executeScript("PF('contactFormDialog').hide();");
+
+    }
+    
+    public Boolean getIsNewContact() {
+        return getSelectedContact().getId() == null && !getEdit();
+    }
+
+    public Boolean getIsNewAddress() {
+        return getSelectedAddress().getId() == null && !getEdit();
+    }
+    
+    public void updateContact() {
+        getSelectedManufacturer().setIsDirty(true);
+    }
+
+    public void updateAddress() {
+        getSelectedManufacturer().setIsDirty(true);
+    }
+    
+     public void removeContact() {
+        getSelectedManufacturer().getContacts().remove(selectedContact);
+        getSelectedManufacturer().setIsDirty(true);
+        selectedContact = null;
+    }
+
+    public void removeAddress() {
+        getSelectedManufacturer().getAddresses().remove(selectedAddress);
+        getSelectedManufacturer().setIsDirty(true);
+        selectedAddress = null;
     }
 
 }
