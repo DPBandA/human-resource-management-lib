@@ -36,9 +36,13 @@ public class ManufacturerValidator implements Validator {
 
     @Override
     public void validate(FacesContext context, UIComponent component, Object value) throws ValidatorException {
-        
-        // Check for valid names
-        if (!BusinessEntityUtils.validateText(value.toString().trim())) {
+
+        if (value != null) // Check for valid names
+        {
+            if (!BusinessEntityUtils.validateText(value.toString().trim())) {
+                throw new ValidatorException(getMessage(component.getId()));
+            }
+        } else {
             throw new ValidatorException(getMessage(component.getId()));
         }
 
@@ -47,7 +51,7 @@ public class ManufacturerValidator implements Validator {
     private FacesMessage getMessage(String componentId) {
         switch (componentId) {
             case "manufacturerName":
-                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid Name", "Please enter a valid name.");                     
+                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid Name", "Please enter a valid name.");
             default:
                 return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Field Value Required", "Please enter all required fields.");
         }

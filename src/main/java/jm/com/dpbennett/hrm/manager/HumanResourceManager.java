@@ -1743,5 +1743,16 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
         getSelectedManufacturer().setIsDirty(true);
         selectedAddress = null;
     }
+    
+     public List<Manufacturer> completeActiveManufacturer(String query) {
+        try {
+            return Manufacturer.findActiveManufacturersByAnyPartOfName(getEntityManager(), query);
+
+        } catch (Exception e) {
+            System.out.println(e);
+
+            return new ArrayList<>();
+        }
+    }
 
 }
