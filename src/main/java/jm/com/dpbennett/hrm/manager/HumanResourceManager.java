@@ -726,7 +726,6 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
         isActiveDivisionsOnly = true;
         isActiveManufacturersOnly = true;
         isActiveEmailsOnly = true;
-        foundManufacturers = new ArrayList<>();
     }
 
     public Boolean getIsActiveDepartmentsOnly() {
@@ -1485,6 +1484,9 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
     }
 
     public List<Manufacturer> getFoundManufacturers() {
+        if (foundManufacturers == null) {
+            foundManufacturers = Manufacturer.findAllActiveManufacturers(getEntityManager());
+        }
         return foundManufacturers;
     }
 
@@ -1645,7 +1647,7 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
 
         getSelectedManufacturer().setIsDirty(false);
     }
-    
+
     public void createNewContact() {
         selectedContact = null;
 
@@ -1691,7 +1693,7 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
     public List<Contact> getContactsModel() {
         return getSelectedManufacturer().getContacts();
     }
-    
+
     public void okAddress() {
 
         selectedAddress = selectedAddress.prepare();
@@ -1703,7 +1705,7 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
         PrimeFaces.current().executeScript("PF('addressFormDialog').hide();");
 
     }
-    
+
     public void okContact() {
 
         selectedContact = selectedContact.prepare();
@@ -1715,7 +1717,7 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
         PrimeFaces.current().executeScript("PF('contactFormDialog').hide();");
 
     }
-    
+
     public Boolean getIsNewContact() {
         return getSelectedContact().getId() == null && !getEdit();
     }
@@ -1723,7 +1725,7 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
     public Boolean getIsNewAddress() {
         return getSelectedAddress().getId() == null && !getEdit();
     }
-    
+
     public void updateContact() {
         getSelectedManufacturer().setIsDirty(true);
     }
@@ -1731,8 +1733,8 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
     public void updateAddress() {
         getSelectedManufacturer().setIsDirty(true);
     }
-    
-     public void removeContact() {
+
+    public void removeContact() {
         getSelectedManufacturer().getContacts().remove(selectedContact);
         getSelectedManufacturer().setIsDirty(true);
         selectedContact = null;
@@ -1743,8 +1745,8 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
         getSelectedManufacturer().setIsDirty(true);
         selectedAddress = null;
     }
-    
-     public List<Manufacturer> completeActiveManufacturer(String query) {
+
+    public List<Manufacturer> completeActiveManufacturer(String query) {
         try {
             return Manufacturer.findActiveManufacturersByAnyPartOfName(getEntityManager(), query);
 
