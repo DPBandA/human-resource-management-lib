@@ -48,6 +48,7 @@ import jm.com.dpbennett.business.entity.hrm.Laboratory;
 import jm.com.dpbennett.business.entity.hrm.Manufacturer;
 import jm.com.dpbennett.business.entity.sm.Preference;
 import jm.com.dpbennett.business.entity.hrm.Subgroup;
+import jm.com.dpbennett.business.entity.sc.MarketProduct;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.hrm.validator.AddressValidator;
 import jm.com.dpbennett.hrm.validator.ContactValidator;
@@ -1625,6 +1626,19 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
         selectedManufacturer.setName(selectedManufacturer.getName().trim());
 
         updateManufacturer();
+    }
+    
+    public List<MarketProduct> completeActiveMarketProduct(String query) {
+        try {
+            return MarketProduct.findActiveMarketProductsByAnyPartOfNameOrDescription(
+                    getEntityManager(),
+                    query);
+            
+        } catch (Exception e) {
+            System.out.println(e);
+            
+            return new ArrayList<>();
+        }
     }
 
     public void createNewAddress() {
