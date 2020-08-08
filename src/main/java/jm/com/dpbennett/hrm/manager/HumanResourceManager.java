@@ -140,6 +140,22 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
 
         getSystemManager().addSingleAuthenticationListener(this);
     }
+    
+    public List<SelectItem> getManufacturerStatuses() {
+        ArrayList statuses = new ArrayList();
+        
+        statuses.addAll(getStringListAsSelectItems(getEntityManager(), "factoryStatusList"));
+        
+        return statuses;
+    }
+    
+    public List<SelectItem> getRegistrationStatuses() {
+        ArrayList statuses = new ArrayList();
+        
+        statuses.addAll(getStringListAsSelectItems(getEntityManager(), "registrationStatusList"));
+        
+        return statuses;
+    }
 
     public Boolean getEdit() {
         return edit;
