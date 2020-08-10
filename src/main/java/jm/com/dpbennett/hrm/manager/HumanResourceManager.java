@@ -1,6 +1,6 @@
 /*
 Human Resource Management (HRM) 
-Copyright (C) 2017  D P Bennett & Associates Limited
+Copyright (C) 2020  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -48,6 +48,7 @@ import jm.com.dpbennett.business.entity.hrm.Laboratory;
 import jm.com.dpbennett.business.entity.hrm.Manufacturer;
 import jm.com.dpbennett.business.entity.sm.Preference;
 import jm.com.dpbennett.business.entity.hrm.Subgroup;
+import jm.com.dpbennett.business.entity.sc.FactoryInspection;
 import jm.com.dpbennett.business.entity.sc.MarketProduct;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.hrm.validator.AddressValidator;
@@ -140,20 +141,20 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
 
         getSystemManager().addSingleAuthenticationListener(this);
     }
-    
+
     public List<SelectItem> getManufacturerStatuses() {
         ArrayList statuses = new ArrayList();
-        
+
         statuses.addAll(getStringListAsSelectItems(getEntityManager(), "factoryStatusList"));
-        
+
         return statuses;
     }
-    
+
     public List<SelectItem> getRegistrationStatuses() {
         ArrayList statuses = new ArrayList();
-        
+
         statuses.addAll(getStringListAsSelectItems(getEntityManager(), "registrationStatusList"));
-        
+
         return statuses;
     }
 
@@ -1643,16 +1644,16 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
 
         updateManufacturer();
     }
-    
+
     public List<MarketProduct> completeActiveMarketProduct(String query) {
         try {
             return MarketProduct.findActiveMarketProductsByAnyPartOfNameOrDescription(
                     getEntityManager(),
                     query);
-            
+
         } catch (Exception e) {
             System.out.println(e);
-            
+
             return new ArrayList<>();
         }
     }
@@ -1786,5 +1787,5 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
             return new ArrayList<>();
         }
     }
-
+   
 }
