@@ -307,10 +307,6 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
                 getSelectedUser().getModules().setFinancialAdminModule(getSelectedUser().
                         getPrivilege().getCanBeFinancialAdministrator());
                 break;
-            case "canAccessProcurementUnit":
-                getSelectedUser().getModules().setPurchaseManagementModule(getSelectedUser().
-                        getPrivilege().getCanAccessProcurementUnit());
-                break;
             case "canAccessHRMUnit":
                 getSelectedUser().getModules().setHrmModule(getSelectedUser().
                         getPrivilege().getCanAccessHRMUnit());
@@ -1363,12 +1359,6 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
             case "financialAdminUnit":
                 getSystemManager().getDashboard().addTab("Financial Administration",
                         getUser().getModules().getFinancialAdminModule());
-                getUser().getModules().setIsDirty(true);
-                getUser().save(getEntityManager());
-                break;
-            case "purchaseManagementUnit":
-                getSystemManager().getDashboard().addTab("Procurement",
-                        getUser().getModules().getPurchaseManagementModule());
                 getUser().getModules().setIsDirty(true);
                 getUser().save(getEntityManager());
                 break;
