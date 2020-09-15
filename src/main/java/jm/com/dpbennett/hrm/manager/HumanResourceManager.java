@@ -63,6 +63,7 @@ import org.primefaces.PrimeFaces;
 import org.primefaces.event.CellEditEvent;
 import org.primefaces.event.CloseEvent;
 import org.primefaces.event.SelectEvent;
+import org.primefaces.event.TabChangeEvent;
 import org.primefaces.model.DualListModel;
 
 /**
@@ -1018,9 +1019,15 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
 
     }
 
+    public void onMainViewTabChange(TabChangeEvent event) {
+        if (event.getTab().getTitle().equals("Manufacturers")) {
+            setManufacturersTableId(":mainTabViewForm:mainTabView:humanResourceTabView:manufacturersTable");
+        }
+
+    }
+
     public void openHumanResourceBrowser() {
-        setManufacturersTableId(":mainTabViewForm:mainTabView:humanResourceTabView:manufacturersTable");
-        
+
         getMainTabView().openTab("Human Resource");
     }
 
@@ -1553,8 +1560,7 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
         } else {
             foundManufacturers = new ArrayList<>();
         }
-        
-        //setManufacturersTableId(":mainTabViewForm:mainTabView:humanResourceTabView:manufacturersTable");
+
     }
 
     public void onManufacturerCellEdit(CellEditEvent event) {
@@ -1789,5 +1795,5 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
             return new ArrayList<>();
         }
     }
-   
+
 }
