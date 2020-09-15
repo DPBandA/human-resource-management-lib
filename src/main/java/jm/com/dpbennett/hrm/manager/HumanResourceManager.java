@@ -48,7 +48,6 @@ import jm.com.dpbennett.business.entity.hrm.Laboratory;
 import jm.com.dpbennett.business.entity.hrm.Manufacturer;
 import jm.com.dpbennett.business.entity.sm.Preference;
 import jm.com.dpbennett.business.entity.hrm.Subgroup;
-import jm.com.dpbennett.business.entity.sc.FactoryInspection;
 import jm.com.dpbennett.business.entity.sc.MarketProduct;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.hrm.validator.AddressValidator;
@@ -128,6 +127,7 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
     private List<User> foundUsers;
     private Manufacturer selectedManufacturer;
     private Boolean edit;
+    private String manufacturersTableId;
 
     /**
      * Creates a new instance of SystemManager
@@ -140,6 +140,14 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
         reset();
 
         getSystemManager().addSingleAuthenticationListener(this);
+    }
+
+    public String getManufacturersTableId() {
+        return manufacturersTableId;
+    }
+
+    public void setManufacturersTableId(String manufacturersTableId) {
+        this.manufacturersTableId = manufacturersTableId;
     }
 
     public List<SelectItem> getManufacturerStatuses() {
@@ -1011,6 +1019,8 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
     }
 
     public void openHumanResourceBrowser() {
+        setManufacturersTableId(":mainTabViewForm:mainTabView:humanResourceTabView:manufacturersTable");
+        
         getMainTabView().openTab("Human Resource");
     }
 
@@ -1463,7 +1473,7 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
     private void initMainTabView() {
 
         if (getUser().getModules().getHrmModule()) {
-            getSystemManager().getMainTabView().openTab("Human Resource");
+            openHumanResourceBrowser();
         }
 
     }
@@ -1543,6 +1553,8 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
         } else {
             foundManufacturers = new ArrayList<>();
         }
+        
+        //setManufacturersTableId(":mainTabViewForm:mainTabView:humanResourceTabView:manufacturersTable");
     }
 
     public void onManufacturerCellEdit(CellEditEvent event) {
