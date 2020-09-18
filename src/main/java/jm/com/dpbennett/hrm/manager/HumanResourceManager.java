@@ -1551,16 +1551,12 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
     }
 
     public void doManufacturerSearch() {
-        if (manufacturerSearchText.trim().length() > 1) {
-            if (getIsActiveManufacturersOnly()) {
-                foundManufacturers = Manufacturer.findActiveManufacturersByAnyPartOfName(getEntityManager(), manufacturerSearchText);
-            } else {
-                foundManufacturers = Manufacturer.findManufacturersByAnyPartOfName(getEntityManager(), manufacturerSearchText);
-            }
-        } else {
-            foundManufacturers = new ArrayList<>();
-        }
 
+        if (getIsActiveManufacturersOnly()) {
+            foundManufacturers = Manufacturer.findActiveManufacturersByAnyPartOfName(getEntityManager(), manufacturerSearchText);
+        } else {
+            foundManufacturers = Manufacturer.findManufacturersByAnyPartOfName(getEntityManager(), manufacturerSearchText);
+        }
     }
 
     public void onManufacturerCellEdit(CellEditEvent event) {
