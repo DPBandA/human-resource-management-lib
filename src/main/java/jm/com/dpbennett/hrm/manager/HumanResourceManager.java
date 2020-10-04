@@ -128,8 +128,6 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
     private List<User> foundUsers;
     private Manufacturer selectedManufacturer;
     private Boolean edit;
-    private String manufacturersTableId;
-
     /**
      * Creates a new instance of SystemManager
      */
@@ -141,14 +139,6 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
         reset();
 
         getSystemManager().addSingleAuthenticationListener(this);
-    }
-
-    public String getManufacturersTableId() {
-        return manufacturersTableId;
-    }
-
-    public void setManufacturersTableId(String manufacturersTableId) {
-        this.manufacturersTableId = manufacturersTableId;
     }
 
     public List<SelectItem> getManufacturerStatuses() {
@@ -1020,10 +1010,7 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
     }
 
     public void onMainViewTabChange(TabChangeEvent event) {
-        if (event.getTab().getTitle().equals("Manufacturers")) {
-            setManufacturersTableId(":mainTabViewForm:mainTabView:humanResourceTabView:manufacturersTable");
-        }
-
+       
     }
 
     public void openHumanResourceBrowser() {
