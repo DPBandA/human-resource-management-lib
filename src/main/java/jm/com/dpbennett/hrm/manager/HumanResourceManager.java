@@ -1638,7 +1638,7 @@ public class HumanResourceManager implements Serializable, AuthenticationListene
 
     public List<MarketProduct> completeActiveMarketProduct(String query) {
         try {
-            return MarketProduct.findActiveMarketProductsByAnyPartOfNameOrDescription(
+            return MarketProduct.findActiveMarketProductsByAnyPartOfNameOrBrand(
                     getEntityManager(),
                     query);
 

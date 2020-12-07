@@ -35,7 +35,8 @@ public class ActiveMarketProductConverter extends ConverterAdapter {
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
 
-        MarketProduct marketProduct = MarketProduct.findActiveMarketProductByName(getEntityManager(), value);
+        MarketProduct marketProduct = 
+                MarketProduct.findActiveMarketProductByNameAndBrand(getEntityManager(), value);
 
         if (marketProduct == null) {
             marketProduct = new MarketProduct(value);
@@ -43,5 +44,12 @@ public class ActiveMarketProductConverter extends ConverterAdapter {
 
         return marketProduct;
     }
+
+    @Override
+    public String getAsString(FacesContext context, UIComponent component, Object value) {
+        return ((MarketProduct) value).toString();
+    }
+    
+    
 
 }
