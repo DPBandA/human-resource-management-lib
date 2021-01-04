@@ -41,7 +41,7 @@ public class HumanResourceManagerTest {
         prop.put("javax.persistence.jdbc.user",
                 "root");
         prop.put("javax.persistence.jdbc.password",
-                "bsj0001"); // TK REMOVE PWD WHEN DONE AND DISABLE TESTING.
+                ""); // TK REMOVE PWD WHEN DONE AND DISABLE TESTING.
         prop.put("javax.persistence.jdbc.url",
                 "jdbc:mysql://172.16.0.10:3306/jmtstest");
         prop.put("javax.persistence.jdbc.driver",
